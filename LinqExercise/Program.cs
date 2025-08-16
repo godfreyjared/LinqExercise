@@ -6,54 +6,97 @@ namespace LinqExercise
 {
     class Program
     {
-        //Static array of integers
         private static int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
 
         static void Main(string[] args)
         {
-            /*
-             * 
-             * Complete every task using Method OR Query syntax. 
-             * You may find that Method syntax is easier to use since it is most like C#
-             * Every one of these can be completed using Linq and then printing with a foreach loop.
-             * Push to your github when completed!
-             * 
-             */
+            // Print the Sum of numbers
+            var sum = (from n in numbers select n).Sum();
+            Console.WriteLine($"Sum: {sum}");
 
-            //TODO: Print the Sum of numbers
+            // Print the Average of numbers
+            var avg = (from n in numbers select n).Average();
+            Console.WriteLine($"Average: {avg}");
 
-            //TODO: Print the Average of numbers
+            // Order numbers in ascending order and print to the console
+            var asc = from n in numbers
+                      orderby n ascending
+                      select n;
+            Console.WriteLine("Ascending:");
+            foreach (var n in asc) Console.WriteLine(n);
 
-            //TODO: Order numbers in ascending order and print to the console
+            // Order numbers in descending order and print to the console
+            var desc = from n in numbers
+                       orderby n descending
+                       select n;
+            Console.WriteLine("Descending:");
+            foreach (var n in desc) Console.WriteLine(n);
 
-            //TODO: Order numbers in descending order and print to the console
+            // Print to the console only the numbers greater than 6
+            var greaterThanSix = from n in numbers
+                                 where n > 6
+                                 select n;
+            Console.WriteLine("Greater than 6:");
+            foreach (var n in greaterThanSix) Console.WriteLine(n);
 
-            //TODO: Print to the console only the numbers greater than 6
+            // Order numbers in any order but only print 4 of them
+            var firstFour = (from n in numbers
+                             orderby n ascending
+                             select n).Take(4);
+            Console.WriteLine("First 4 numbers:");
+            foreach (var n in firstFour) Console.WriteLine(n);
 
-            //TODO: Order numbers in any order (ascending or desc) but only print 4 of them **foreach loop only!**
+            // Change the value at index 4 to your age, then print the numbers in descending order
+            numbers[4] = 30; // replace 30 with your age
+            var ageReplaced = from n in numbers
+                              orderby n descending
+                              select n;
+            Console.WriteLine("After replacing index 4 with age:");
+            foreach (var n in ageReplaced) Console.WriteLine(n);
 
-            //TODO: Change the value at index 4 to your age, then print the numbers in descending order
-
-            // List of employees ****Do not remove this****
+            // List of employees
             var employees = CreateEmployees();
 
-            //TODO: Print all the employees' FullName properties to the console only if their FirstName starts with a C OR an S and order this in ascending order by FirstName.
+            // Print FullName if FirstName starts with C or S, order by FirstName ascending
+            var csEmployees = from e in employees
+                              where e.FirstName.StartsWith("C") || e.FirstName.StartsWith("S")
+                              orderby e.FirstName ascending
+                              select e.FullName;
+            Console.WriteLine("Employees with C or S:");
+            foreach (var name in csEmployees) Console.WriteLine(name);
 
-            //TODO: Print all the employees' FullName and Age who are over the age 26 to the console and order this by Age first and then by FirstName in the same result.
+            // Print FullName and Age of employees > 26, ordered by Age then FirstName
+            var over26 = from e in employees
+                         where e.Age > 26
+                         orderby e.Age, e.FirstName
+                         select new { e.FullName, e.Age };
+            Console.WriteLine("Employees over 26:");
+            foreach (var e in over26) Console.WriteLine($"{e.FullName}, Age: {e.Age}");
 
-            //TODO: Print the Sum of the employees' YearsOfExperience if their YOE is less than or equal to 10 AND Age is greater than 35.
+            // Sum of YOE if YOE <= 10 AND Age > 35
+            var yoeSum = (from e in employees
+                          where e.YearsOfExperience <= 10 && e.Age > 35
+                          select e.YearsOfExperience).Sum();
+            Console.WriteLine($"YOE Sum: {yoeSum}");
 
-            //TODO: Now print the Average of the employees' YearsOfExperience if their YOE is less than or equal to 10 AND Age is greater than 35.
+            // Average of YOE if YOE <= 10 AND Age > 35
+            var yoeAvg = (from e in employees
+                          where e.YearsOfExperience <= 10 && e.Age > 35
+                          select e.YearsOfExperience).Average();
+            Console.WriteLine($"YOE Average: {yoeAvg}");
 
-            //TODO: Add an employee to the end of the list without using employees.Add()
+            // Add an employee to the end of the list without using employees.Add()
+            employees = employees.Concat(new List<Employee>
+            {
+                new Employee("New", "Hire", 28, 2)
+            }).ToList();
 
-
-            Console.WriteLine();
+            Console.WriteLine("Employees after adding new hire:");
+            foreach (var e in employees) Console.WriteLine(e.FullName);
 
             Console.ReadLine();
         }
 
-        #region CreateEmployeesMethod
         private static List<Employee> CreateEmployees()
         {
             List<Employee> employees = new List<Employee>();
@@ -70,6 +113,5 @@ namespace LinqExercise
 
             return employees;
         }
-        #endregion
     }
 }
